@@ -89,7 +89,7 @@ public class Level : MonoBehaviour
             {
                 var finish = Instantiate(wall, transform).transform;
                 finish.localPosition = cellPosition;
-                finish.localScale = new Vector3(cell, 0.001f, cell);
+                finish.localScale = new Vector3(cell, 0.01f, cell);
             }
             if (currLevel.playerPosition == i)
             {
