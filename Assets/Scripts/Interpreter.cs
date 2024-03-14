@@ -5,17 +5,36 @@ using UnityEngine;
 
 public class Interpreter : MonoBehaviour
 {
-    public TextMeshProUGUI code;
+    [SerializeField] private TextMeshProUGUI code;
+    [SerializeField] private GameObject buttons;
+    [SerializeField] private GameObject description;
+    [SerializeField] private TextMeshProUGUI descriptionText;
     private GameObject surfaces;
+    public static int level = 0;
 
     private void Start()
     {
         surfaces = GameObject.Find("Trackables");
     }
 
-    public void ChangeVisibleSurfaces()
+    public void DisableSurfaces()
     {
-        surfaces.SetActive(!surfaces.activeSelf);
+        surfaces.SetActive(false);
+    }
+
+    public void DeleteLevel()
+    {
+        GameObject level = GameObject.FindGameObjectWithTag("Player");
+        if (level != null)
+            Destroy(level);
+        surfaces.SetActive(true);
+    }
+
+    public void ShowDescription(string descriptionString)
+    {
+        buttons.SetActive(false);
+        description.SetActive(true);
+        descriptionText.text = descriptionString;
     }
 
     public void RunCode()

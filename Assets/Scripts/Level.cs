@@ -12,14 +12,16 @@ public class Data
     public int[] labyrinth;
     public int playerPosition;
     public int playerRotation;
+    public string description;
 
-    public Data(int width, int height, int[] labyrinth, int playerPosition, int playerRotation)
+    public Data(int width, int height, int[] labyrinth, int playerPosition, int playerRotation, string description)
     {
         this.width = width;
         this.height = height;
         this.labyrinth = labyrinth;
         this.playerPosition = playerPosition;
         this.playerRotation = playerRotation;
+        this.description = description;
     }
 }
 
@@ -27,11 +29,10 @@ public class Level : MonoBehaviour
 {
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private GameObject wall;
+    [SerializeField] private float cell;
 
-    public float cell;
-
-    private int level = -1;
-
+    private Interpreter interpreter;
+    
     private GameObject player;
     private Player Player;
 
@@ -45,8 +46,12 @@ public class Level : MonoBehaviour
 
     private void Start()
     {
-        levels[0] = new Data(4, 3, new int[]{ 2, 0, 1, 0, 0, 2, 4, 2, 0, 1, 0, 0 }, 4, 1);
-        levels[1] = new Data(2, 2, new int[] { 5, 0, 0, 0 }, 1, 2);
+        levels[0] = new Data(4, 3, new int[]{ 2, 0, 1, 0, 0, 2, 4, 2, 0, 1, 0, 0 }, 4, 1, "лол");
+        levels[1] = new Data(2, 2, new int[] { 5, 0, 0, 0 }, 1, 2, "");
+        interpreter = GameObject.Find("Canvas").GetComponent<Interpreter>();
+        if (interpreter == null)
+            return;
+        interpreter.DisableSurfaces();
         NewLevel();
     }
 
@@ -187,10 +192,17 @@ public class Level : MonoBehaviour
             DestroyImmediate(transform.GetChild(0).gameObject);
     }
 
-    public void NewLevel()
+    public void SolveLevel()
     {
-        level++;
-        currLevel = levels[level];
+        Interpreter.level++;
+        NewLevel();
+    }
+
+    private void NewLevel()
+    {
+        currLevel = levels[Interpreter.level];
+        if (currLevel.description != "")
+            interpreter.ShowDescription(currLevel.description);
         ClearLevel();
         CreateLevel();
     }

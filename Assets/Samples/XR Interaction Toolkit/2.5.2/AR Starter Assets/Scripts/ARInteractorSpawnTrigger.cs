@@ -173,16 +173,13 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.ARStarterAssets
                         attemptSpawn = true;
                     break;
             }
-
             if (attemptSpawn && m_ARInteractor.TryGetCurrentARRaycastHit(out var arRaycastHit))
             {
                 var arPlane = arRaycastHit.trackable as ARPlane;
                 if (arPlane == null)
                     return;
-
                 if (m_RequireHorizontalUpSurface && arPlane.alignment != PlaneAlignment.HorizontalUp)
                     return;
-
                 m_ObjectSpawner.TrySpawnObject(arRaycastHit.pose.position, arPlane.normal);
             }
         }

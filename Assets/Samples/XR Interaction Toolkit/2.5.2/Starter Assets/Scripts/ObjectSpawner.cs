@@ -206,7 +206,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
             GameObject level = GameObject.FindGameObjectWithTag("Player");
             if (level != null)
-                Destroy(level);
+                return false;
 
             var objectIndex = isSpawnOptionRandomized ? Random.Range(0, m_ObjectPrefabs.Count) : m_SpawnOptionIndex;
             var newObject = Instantiate(m_ObjectPrefabs[objectIndex]);

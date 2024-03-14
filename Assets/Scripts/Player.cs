@@ -52,6 +52,6 @@ public class Player : MonoBehaviour
             }
         }
         if (result == Result.solve)
-            level.NewLevel();
+            level.SolveLevel();
     }
 }

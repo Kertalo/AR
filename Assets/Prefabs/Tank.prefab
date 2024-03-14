@@ -1224,6 +1224,7 @@ MonoBehaviour:
   transformForward: 0.3
   speedForward: 50
   speedRotate: 50
+  level: {fileID: 0}
 --- !u!1 &8921880013045605522
 GameObject:
   m_ObjectHideFlags: 0
@@ -1317,6 +1318,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5536116184364566138}
   - component: {fileID: -2606209077111922725}
+  - component: {fileID: 8664609695143231714}
   m_Layer: 0
   m_Name: Tank
   m_TagString: Untagged
@@ -1355,3 +1357,25 @@ MonoBehaviour:
   transformForward: 0.3
   speedForward: 50
   speedRotate: 50
+  level: {fileID: 0}
+--- !u!65 &8664609695143231714
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9038749444477787221}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.6, y: 0.3, z: 0.4}
+  m_Center: {x: 0, y: 0.15, z: 0}
