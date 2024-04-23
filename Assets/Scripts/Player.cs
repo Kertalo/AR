@@ -2,11 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Commands
-{
-    forward, rotate_left, rotate_right, shot
-}
-
 public enum Result
 {
     solve, notSolve, wall

@@ -29,6 +29,7 @@ public class Level : MonoBehaviour
 {
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private GameObject wall;
+    [SerializeField] private GameObject finish;
     [SerializeField] private float cell;
 
     private Interpreter interpreter;
@@ -38,7 +39,7 @@ public class Level : MonoBehaviour
 
     private Data currLevel;
     
-    private Data[] levels = new Data[2];
+    private Data[] levels = new Data[5];
     private Vector3 playerPosition;
 
     private int w;
@@ -46,8 +47,17 @@ public class Level : MonoBehaviour
 
     private void Start()
     {
-        levels[0] = new Data(4, 3, new int[]{ 2, 0, 1, 0, 0, 2, 4, 2, 0, 1, 0, 0 }, 4, 1, "лол");
-        levels[1] = new Data(2, 2, new int[] { 5, 0, 0, 0 }, 1, 2, "");
+        levels[0] = new Data(3, 2, new int[]{ 0, 2, 4, 1, 0, 0 }, 0, 1,
+            "1 уровень. Здесь вы можете увидеть робота и сундук, в котором этому танку " +
+            "нужно оказаться. Для того, чтобы двигать робота вперед на одну клетку, нужно " +
+            "использовать команду \"forward()\". В данном уровне используйте эту команду дважды. " +
+            "Команды нужно разделять переносом строки.");
+        levels[1] = new Data(3, 2, new int[] { 0, 2, 0, 1, 0, 4 }, 0, 1, 
+            "2 уровень. Этот уровень похож на предыдущий, но здесь нужно использовать поворот " +
+            "направо \"rotate_right()\", чтобы дойти до финиша.");
+        levels[2] = new Data(3, 3, new int[] { 4, 2, 2, 0, 0, 0, 1, 1, 0 }, 7, 0,
+            "3 уровень. Тут вам нужно использовать повороты направо и налево: " +
+            "\"rotate_right\", \"rotate_left\".");
         interpreter = GameObject.Find("Canvas").GetComponent<Interpreter>();
         if (interpreter == null)
             return;
@@ -57,7 +67,6 @@ public class Level : MonoBehaviour
 
     private void CreateLevel()
     {
-        //transform.rotation = Quaternion.Euler(0, 0, transform.eulerAngles.z);
         float wallDepth = cell / 10;
         float wallHeight = cell / 2;
 
@@ -92,9 +101,9 @@ public class Level : MonoBehaviour
             }
             if ((currLevel.labyrinth[i] & 4) == 4)
             {
-                var finish = Instantiate(wall, transform).transform;
-                finish.localPosition = cellPosition;
-                finish.localScale = new Vector3(cell, 0.01f, cell);
+                var newFinish = Instantiate(finish, transform).transform;
+                newFinish.localPosition = cellPosition;
+                newFinish.localScale = new Vector3(cell, cell, cell);
             }
             if (currLevel.playerPosition == i)
             {
