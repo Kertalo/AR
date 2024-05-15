@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public enum Result
@@ -23,7 +22,7 @@ public class Player : MonoBehaviour
                 float speed = transformForward / (float)speedForward;
                 for (int i = 0; i < speedForward; i++)
                 {
-                    transform.Translate(-speed, 0, 0);
+                    transform.Translate(0, 0, speed);
                     yield return new WaitForFixedUpdate();
                 }
             }

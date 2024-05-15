@@ -1,11 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using System.Text.RegularExpressions;
-using System.Linq;
-
 
 public enum Commands
 {
@@ -39,12 +36,14 @@ public class Interpreter : MonoBehaviour
     [SerializeField] private GameObject description;
     [SerializeField] private TextMeshProUGUI descriptionText;
     private GameObject surfaces;
+    private GameObject spawner;
     private bool isFirstDescription = true;
     public static int level = 0;
 
     private void Start()
     {
         surfaces = GameObject.Find("Trackables");
+        spawner = GameObject.Find("Object Spawner");
         DisableSurfaces();
     }
 
@@ -59,7 +58,14 @@ public class Interpreter : MonoBehaviour
         if (level != null)
             Destroy(level);
         buttons.SetActive(false);
+        spawner.SetActive(false);
         surfaces.SetActive(true);
+        Invoke(nameof(DeleteIsOver), 0.3f);
+    }
+
+    private void DeleteIsOver()
+    {
+        spawner.SetActive(true);
     }
 
     public void CloseDescription()
@@ -82,32 +88,21 @@ public class Interpreter : MonoBehaviour
 
     public void RunCode()
     {
-        /*string[] operators = code.text.Split(';');
-        List<Commands> commands = new();
-        for (int i = 0; i < operators.Length; i++)
-        {
-            if (operators[i].Trim() == "forward")
-                commands.Add(Commands.forward);
-            else if (operators[i].Trim() == "rotate_left")
-                commands.Add(Commands.rotate_left);
-            else if (operators[i].Trim() == "rotate_right")
-                commands.Add(Commands.rotate_right);
-        }    
-
-        var player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null && player.TryGetComponent<Level>(out var level))
-            level.RunCode(commands.ToArray());*/
         string[] lines = code.text.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
         string tab = @"^\s";
         string forward = @"\s*forward\(\)\s*";
         string right = @"\s*rotate_right\(\)\s*";
         string left = @"\s*rotate_left\(\)\s*";
-        string loop_oper = @"\s*loop (\d+)\s*";
+        string loop_oper = @"\s*loop (\d\d?)\s*";
+        string if_oper = @"\s*if (isEmpty)\s*";
         List<Command> commands = new();
         for (int i = 0; i < lines.Length; i++)
         {
-            if (Regex.IsMatch(lines[i], tab, RegexOptions.IgnoreCase))
+            while (Regex.IsMatch(lines[i], tab, RegexOptions.IgnoreCase))
+            {
                 commands.Add(new(Commands.tab, i));
+                lines[i] = Regex.Replace(lines[i], tab, "");
+            }
 
             if (Regex.IsMatch(lines[i], forward, RegexOptions.IgnoreCase))
                 commands.Add(new(Commands.forward, i));
@@ -120,9 +115,11 @@ public class Interpreter : MonoBehaviour
                 var match = Regex.Match(lines[i], loop_oper);
                 commands.Add(new(Commands.loop_oper, i, Int32.Parse(match.Groups[1].Value)));
             }
+            else if (Regex.IsMatch(lines[i], if_oper, RegexOptions.IgnoreCase))
+                commands.Add(new(Commands.if_oper, i));
             else
             {
-                Debug.Log("Error");
+                ShowDescription("Синтаксическая ошибка в строке " + (i + 1));
                 return;
             }
         }

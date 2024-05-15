@@ -1,9 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System.IO;
-using UnityEngine.Rendering;
-using System.Threading;
 
 public class Data
 {
@@ -37,7 +32,8 @@ public class Level : MonoBehaviour
     private GameObject player;
     private Player Player;
 
-    private Data currLevel;
+    public static Data currLevel;
+    public static int finishPosition = 0;
     
     private Data[] levels = new Data[5];
     private Vector3 playerPosition;
@@ -48,7 +44,7 @@ public class Level : MonoBehaviour
     private void Start()
     {
         levels[0] = new Data(3, 2, new int[]{ 0, 2, 4, 1, 0, 0 }, 0, 1,
-            "1 уровень. «десь вы можете увидеть робота и сундук, в котором этому танку " +
+            "1 уровень. «десь вы можете увидеть робота и сундук, в котором ему " +
             "нужно оказатьс€. ƒл€ того, чтобы двигать робота вперед на одну клетку, нужно " +
             "использовать команду \"forward()\". ¬ данном уровне используйте эту команду дважды. " +
             " оманды нужно раздел€ть переносом строки.");
@@ -58,6 +54,13 @@ public class Level : MonoBehaviour
         levels[2] = new Data(3, 3, new int[] { 4, 2, 2, 0, 0, 0, 1, 1, 0 }, 7, 0,
             "3 уровень. “ут вам нужно использовать повороты направо и налево: " +
             "\"rotate_right\", \"rotate_left\".");
+        levels[3] = new Data(4, 2, new int[] { 0, 3, 2, 0, 0, 0, 0, 4 }, 4, 1,
+            "4 уровень. “еперь вы научитесь использовать циклы. " +
+            "÷иклы - это конструкци€, котора€ заставл€ет блок кода выполн€тьс€ несколько раз. " +
+            "„тобы их использовать, напишите \"loop n:\", где \"n\" - количество повторений. " +
+            "ƒалее, на каждой последующей строке, котора€ входит в этот цикл, нужно поставить пробел в начале.");
+        levels[4] = new Data(3, 3, new int[] { 0, 2, 0, 1, 1, 0, 0, 5, 0 }, 8, 0,
+            "5 уровень.\nЁтот уровень посложнее. ѕостарайтесь написать программу из п€ти строк.");
         interpreter = GameObject.Find("Canvas").GetComponent<Interpreter>();
         if (interpreter == null)
             return;
@@ -103,13 +106,13 @@ public class Level : MonoBehaviour
             {
                 var newFinish = Instantiate(finish, transform).transform;
                 newFinish.localPosition = cellPosition;
-                newFinish.localScale = new Vector3(cell, cell, cell);
+                newFinish.localScale = new Vector3(cell / 2, cell / 2, cell / 2);
             }
             if (currLevel.playerPosition == i)
             {
                 player = Instantiate(playerPrefab, transform);
                 player.transform.SetLocalPositionAndRotation(
-                    cellPosition, Quaternion.Euler(0, (currLevel.playerRotation + 1) * 90, 0));
+                    cellPosition, Quaternion.Euler(0, currLevel.playerRotation * 90, 0));
                 player.transform.localScale = new Vector3(cell, cell, cell);
                 Player = player.GetComponent<Player>();
                 Player.level = GetComponent<Level>();
@@ -128,7 +131,29 @@ public class Level : MonoBehaviour
     {
         if (playerPosition != null)
             player.transform.SetLocalPositionAndRotation(
-                playerPosition, Quaternion.Euler(0, (currLevel.playerRotation + 1) * 90, 0));
+                playerPosition, Quaternion.Euler(0, currLevel.playerRotation * 90, 0));
+    }
+
+    public static int CountFinishPositions()
+    {
+        int count = 0;
+        for (int i = 0; i < currLevel.labyrinth.Length; i++)
+            if ((currLevel.labyrinth[i] & 4) == 4)
+                count++;
+        return count;
+    }
+
+    public static bool IsFinishPosition(int position)
+    {
+        int count = 0;
+        for (int i = 0; i <= position; i++)
+            if ((currLevel.labyrinth[i] & 4) == 4)
+            {
+                if (finishPosition == count && position == i)
+                    return true;
+                count++;
+            }
+        return false;
     }
 
     private int IsLevelSolve(Commands[] commands)
@@ -153,7 +178,7 @@ public class Level : MonoBehaviour
                             return i;
                         break;
                     case 1:
-                        if (position + 1 % w != 0 && (currLevel.labyrinth[position] & 1) != 1)
+                        if ((position + 1) % w != 0 && (currLevel.labyrinth[position] & 1) != 1)
                             position += 1;
                         else
                             return i;
@@ -191,7 +216,7 @@ public class Level : MonoBehaviour
         Result result = count < commands.Length ? Result.wall :
             (count == commands.Length ? Result.notSolve : Result.solve);
         if (count > commands.Length)
-            count--;
+            count = commands.Length;
         StartCoroutine(Player.GetCommands(commands[0..count], result));
     }
 
@@ -204,7 +229,12 @@ public class Level : MonoBehaviour
     public void SolveLevel()
     {
         Interpreter.level++;
-        NewLevel();
+        if (Interpreter.level == levels.Length)
+            interpreter.ShowDescription("»гра пройдена!");
+        else
+        {
+            Invoke(nameof(NewLevel), 1);
+        }
     }
 
     private void NewLevel()

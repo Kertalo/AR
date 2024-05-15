@@ -47,5 +47,5 @@ MonoBehaviour:
   playerPrefab: {fileID: 1008734778456643908, guid: 25c7f3058c7b3944fbe9ddcd2955d73b,
     type: 3}
   wall: {fileID: 3800743568820687807, guid: ad5758094cccc6f44934b08b9b35de77, type: 3}
-  finish: {fileID: 1777924884089885361, guid: 2614c4ebcdcd5fb4cb784934c089aa46, type: 3}
+  finish: {fileID: 8954518982097225188, guid: 3082097348be1d442841596a8a23e16a, type: 3}
   cell: 0.2
