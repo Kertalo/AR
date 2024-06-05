@@ -3,7 +3,7 @@ using UnityEngine;
 
 public enum Result
 {
-    solve, notSolve, wall
+    solve, notSolve, wall, wrongIf, wrongChest
 }
 
 public class Player : MonoBehaviour
@@ -13,11 +13,11 @@ public class Player : MonoBehaviour
     public int speedRotate;
     public Level level;
 
-    public IEnumerator GetCommands(Commands[] commands, Result result)
+    public IEnumerator GetCommands(Command[] commands, Result result)
     {
-        foreach (Commands command in commands)
+        foreach (Command command in commands)
         {
-            if (command == Commands.forward)
+            if (command == Command.forward)
             {
                 float speed = transformForward / (float)speedForward;
                 for (int i = 0; i < speedForward; i++)
@@ -26,7 +26,7 @@ public class Player : MonoBehaviour
                     yield return new WaitForFixedUpdate();
                 }
             }
-            else if (command == Commands.rotate_left)
+            else if (command == Command.rotate_left)
             {
                 float speed = 90 / (float)speedRotate;
                 for (int i = 0; i < speedRotate; i++)
@@ -35,7 +35,7 @@ public class Player : MonoBehaviour
                     yield return new WaitForFixedUpdate();
                 }
             }
-            else if (command == Commands.rotate_right)
+            else if (command == Command.rotate_right)
             {
                 float speed = 90 / (float)speedRotate;
                 for (int i = 0; i < speedRotate; i++)
@@ -47,5 +47,11 @@ public class Player : MonoBehaviour
         }
         if (result == Result.solve)
             level.SolveLevel();
+        else if (result == Result.wall)
+            level.WallOnWay();
+        else if (result == Result.wrongIf)
+            level.WrongIf();
+        else if (result == Result.wrongChest)
+            level.WrongChest();
     }
 }

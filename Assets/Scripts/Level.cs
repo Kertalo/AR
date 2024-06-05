@@ -1,4 +1,9 @@
 using UnityEngine;
+using UnityEngine.UIElements;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
+using Mono.Data.Sqlite;
+using System.Data;
+//using UnityEditor.PackageManager;
 
 public class Data
 {
@@ -32,35 +37,89 @@ public class Level : MonoBehaviour
     private GameObject player;
     private Player Player;
 
-    public static Data currLevel;
-    public static int finishPosition = 0;
+    public static Data currentLevel;
     
-    private Data[] levels = new Data[5];
+    private Data[] levels = new Data[7];
     private Vector3 playerPosition;
 
-    private int w;
-    private int h;
+    //private IDbConnection connection;
 
     private void Start()
     {
+        //connection = new SqliteConnection("URI=file:" + Application.streamingAssetsPath + "/levels.db");
+        //connection.Open();
+        //IDbCommand command = connection.CreateCommand();
+        //command.CommandText = "SELECT * FROM users WHERE name = '" + "';";
+        /*IDataReader dataReader = command.ExecuteReader();
+
+        if (dataReader.Read())
+        {
+            if (dataReader.GetString(1) == password.text)
+            {
+                maxLevel = dataReader.GetInt32(2);
+            }
+            else
+            {
+                error.text = "Неверный пароль";
+                connection.Close();
+                command.Dispose();
+                return;
+            }
+        }
+        else
+        {
+            command.Dispose();
+            command.CommandText = "INSERT INTO users (name,password,level) " +
+                "VALUES('" + login.text + "', '" + password.text + "', 0);";
+            command.ExecuteReader();
+        }*/
+        //connection.Close();
+        //command.Dispose();
         levels[0] = new Data(3, 2, new int[]{ 0, 2, 4, 1, 0, 0 }, 0, 1,
-            "1 уровень. Здесь вы можете увидеть робота и сундук, в котором ему " +
-            "нужно оказаться. Для того, чтобы двигать робота вперед на одну клетку, нужно " +
-            "использовать команду \"forward()\". В данном уровне используйте эту команду дважды. " +
-            "Команды нужно разделять переносом строки.");
-        levels[1] = new Data(3, 2, new int[] { 0, 2, 0, 1, 0, 4 }, 0, 1, 
-            "2 уровень. Этот уровень похож на предыдущий, но здесь нужно использовать поворот " +
-            "направо \"rotate_right()\", чтобы дойти до финиша.");
+            "<b><color=#7030a0>1 УРОВЕНЬ</color></b>\n" +
+            "Перед Вами робот и сундук, в котором ему нужно оказаться.\n" +
+            "Для движения робота вперед на одну клетку используем команду:\n" +
+            "<b><color=#0070c0>forward()</color></b>\n" +
+            "Эту команду нужно использовать 2 раза.\n" +
+            "Каждая команда записывается с новой строки.");
+        levels[1] = new Data(3, 2, new int[] { 0, 2, 0, 1, 0, 4 }, 0, 1,
+            "<b><color=#7030a0>2 УРОВЕНЬ</color></b>\n" +
+            "Этот уровень похож на 1 уровень.\n" +
+            "Чтобы дойти до финиша, нужно использовать две команды:\n" +
+            "<b><color=#0070c0>forward()</color></b> – движение вперед\n" +
+            "<b><color=#0070c0>rotate_right()</color></b> – поворот направо");
         levels[2] = new Data(3, 3, new int[] { 4, 2, 2, 0, 0, 0, 1, 1, 0 }, 7, 0,
-            "3 уровень. Тут вам нужно использовать повороты направо и налево: " +
-            "\"rotate_right\", \"rotate_left\".");
+            "<b><color=#7030a0>3 УРОВЕНЬ</color></b>\n" +
+            "Используем команды:\n" +
+            "<b><color=#0070c0>forward()</color></b> – движение вперед\n" +
+            "<b><color=#0070c0>rotate_right()</color></b> – поворот направо\n" +
+            "<b><color=#0070c0>rotate_left()</color></b> – поворот налево");
         levels[3] = new Data(4, 2, new int[] { 0, 3, 2, 0, 0, 0, 0, 4 }, 4, 1,
-            "4 уровень. Теперь вы научитесь использовать циклы. " +
-            "Циклы - это конструкция, которая заставляет блок кода выполняться несколько раз. " +
-            "Чтобы их использовать, напишите \"loop n:\", где \"n\" - количество повторений. " +
-            "Далее, на каждой последующей строке, которая входит в этот цикл, нужно поставить пробел в начале.");
+            "<b><color=#7030a0>4 УРОВЕНЬ</color></b>\n" +
+            "Учимся использовать циклы.\n" +
+            "<b>Цикл</b> - это конструкция, которая заставляет блок кода выполняться несколько раз.\n" +
+            "Используем команду:\n" +
+            "<b><color=#0070c0>loop n:</color></b>\n" +
+            "Например:\n" +
+            "<color=red>loop 2:</color>\n" +
+            "<color=red>    forward()</color>\n" +
+            "<color=red>    rotate_right()</color>");
         levels[4] = new Data(3, 3, new int[] { 0, 2, 0, 1, 1, 0, 0, 5, 0 }, 8, 0,
-            "5 уровень.\nЭтот уровень посложнее. Постарайтесь написать программу из пяти строк.");
+            "<b><color=#7030a0>5 УРОВЕНЬ</color></b>\n" +
+            "Этот уровень посложнее.\n" +
+            "Постарайтесь написать программу из пяти строк!!!");
+        levels[5] = new Data(3, 2, new int[] { 0, 6, 4, 1, 0, 0 }, 0, 1,
+            "<b><color=#7030a0>6 УРОВЕНЬ</color></b>\n" +
+            "Учимся использовать условный оператор!\n" +
+            "У нас  2 сундука, но только один из них заполнен золотом.\n" +
+            "Условие для дальнейшего движения робота, если сундук пуст, задается командой:\n" +
+            "<b><color=#0070c0>if (isEmpty):</color></b>\n" +
+            "Не забудьте поставить в следующих строках пробел в начале.");
+        levels[6] = new Data(3, 2, new int[] { 0, 6, 4, 1, 0, 4 }, 0, 1,
+            "<b><color=#7030a0>7 УРОВЕНЬ</color></b>\n" +
+            "Здесь уже 3 сундука.\n" +
+            "Нужно использовать условие, вложенное в другое условие.\n" +
+            "То есть в последующих условиях пробелов должно быть на один больше, чем у предыдущего.");
         interpreter = GameObject.Find("Canvas").GetComponent<Interpreter>();
         if (interpreter == null)
             return;
@@ -73,8 +132,8 @@ public class Level : MonoBehaviour
         float wallDepth = cell / 10;
         float wallHeight = cell / 2;
 
-        w = currLevel.width;
-        h = currLevel.height;
+        int w = currentLevel.width;
+        int h = currentLevel.height;
 
         for (int i = 0; i < 4; i++)
         {
@@ -90,29 +149,29 @@ public class Level : MonoBehaviour
 
         for (int i = 0; i < w * h; i++)
         {
-            if ((currLevel.labyrinth[i] & 1) == 1)
+            if ((currentLevel.labyrinth[i] & 1) == 1)
             {
                 var newWall = Instantiate(wall, transform).transform;
                 newWall.localPosition = cellPosition + new Vector3(cell / 2, wallHeight / 2, 0);
                 newWall.localScale = new Vector3(wallDepth, wallHeight, cell + wallDepth);
             }
-            if ((currLevel.labyrinth[i] & 2) == 2)
+            if ((currentLevel.labyrinth[i] & 2) == 2)
             {
                 var newWall = Instantiate(wall, transform).transform;
                 newWall.localPosition = cellPosition + new Vector3(0, wallHeight / 2, -cell / 2);
                 newWall.localScale = new Vector3(cell + wallDepth, wallHeight, wallDepth);
             }
-            if ((currLevel.labyrinth[i] & 4) == 4)
+            if ((currentLevel.labyrinth[i] & 4) == 4)
             {
                 var newFinish = Instantiate(finish, transform).transform;
                 newFinish.localPosition = cellPosition;
                 newFinish.localScale = new Vector3(cell / 2, cell / 2, cell / 2);
             }
-            if (currLevel.playerPosition == i)
+            if (currentLevel.playerPosition == i)
             {
                 player = Instantiate(playerPrefab, transform);
                 player.transform.SetLocalPositionAndRotation(
-                    cellPosition, Quaternion.Euler(0, currLevel.playerRotation * 90, 0));
+                    cellPosition, Quaternion.Euler(0, currentLevel.playerRotation * 90, 0));
                 player.transform.localScale = new Vector3(cell, cell, cell);
                 Player = player.GetComponent<Player>();
                 Player.level = GetComponent<Level>();
@@ -131,84 +190,78 @@ public class Level : MonoBehaviour
     {
         if (playerPosition != null)
             player.transform.SetLocalPositionAndRotation(
-                playerPosition, Quaternion.Euler(0, currLevel.playerRotation * 90, 0));
+                playerPosition, Quaternion.Euler(0, currentLevel.playerRotation * 90, 0));
     }
 
     public static int CountFinishPositions()
     {
         int count = 0;
-        for (int i = 0; i < currLevel.labyrinth.Length; i++)
-            if ((currLevel.labyrinth[i] & 4) == 4)
+        for (int i = 0; i < currentLevel.labyrinth.Length; i++)
+            if ((currentLevel.labyrinth[i] & 4) == 4)
                 count++;
         return count;
     }
 
-    public static bool IsFinishPosition(int position)
+    public static bool DoCommand(Command command, Data data, ref int position, ref int rotation)
     {
-        int count = 0;
-        for (int i = 0; i <= position; i++)
-            if ((currLevel.labyrinth[i] & 4) == 4)
-            {
-                if (finishPosition == count && position == i)
-                    return true;
-                count++;
-            }
-        return false;
-    }
-
-    private int IsLevelSolve(Commands[] commands)
-    {
-        int position = currLevel.playerPosition;
-        int rotation = currLevel.playerRotation;
-
-        for (int i = 0; i < commands.Length; i++)
+        if (command == Command.rotate_left)
+            rotation = (rotation + 3) % 4;
+        else if (command == Command.rotate_right)
+            rotation = (rotation + 1) % 4;
+        else if (command == Command.forward)
         {
-            if (commands[i] == Commands.rotate_left)
-                rotation = (rotation + 3) % 4;
-            else if (commands[i] == Commands.rotate_right)
-                rotation = (rotation + 1) % 4;
-            else if (commands[i] == Commands.forward)
+            int w = data.width;
+            int h = data.height;
+            switch (rotation)
             {
-                switch (rotation)
-                {
-                    case 0:
-                        if (position - w >= 0 && (currLevel.labyrinth[position - w] & 2) != 2)
-                            position -= w;
-                        else
-                            return i;
-                        break;
-                    case 1:
-                        if ((position + 1) % w != 0 && (currLevel.labyrinth[position] & 1) != 1)
-                            position += 1;
-                        else
-                            return i;
-                        break;
-                    case 2:
-                        if (position + w < w * h && (currLevel.labyrinth[position] & 2) != 2)
-                            position += w;
-                        else
-                            return i;
-                        break;
-                    case 3:
-                        if (position % w != 0 && (currLevel.labyrinth[position - 1] & 1) != 1)
-                            position -= 1;
-                        else
-                            return i;
-                        break;
-                    default:
-                        break;
-                }
+                case 0:
+                    if (position - w >= 0 && (data.labyrinth[position - w] & 2) != 2)
+                        position -= w;
+                    else
+                        return false;
+                    break;
+                case 1:
+                    if ((position + 1) % w != 0 && (data.labyrinth[position] & 1) != 1)
+                        position += 1;
+                    else
+                        return false;
+                    break;
+                case 2:
+                    if (position + w < w * h && (data.labyrinth[position] & 2) != 2)
+                        position += w;
+                    else
+                        return false;
+                    break;
+                case 3:
+                    if (position % w != 0 && (data.labyrinth[position - 1] & 1) != 1)
+                        position -= 1;
+                    else
+                        return false;
+                    break;
+                default:
+                    break;
             }
         }
+        return true;
+    }
 
-        if ((currLevel.labyrinth[position] & 4) == 4)
+    private int IsLevelSolve(Command[] commands)
+    {
+        int position = currentLevel.playerPosition;
+        int rotation = currentLevel.playerRotation;
+
+        for (int i = 0; i < commands.Length; i++)
+            if (!DoCommand(commands[i], currentLevel, ref position, ref rotation))
+                return i;
+
+        if ((currentLevel.labyrinth[position] & 4) == 4)
             return commands.Length + 1;
         return commands.Length;
     }
 
-    public void RunCode(Commands[] commands)
+    public void RunCode(Result firstResult, Command[] commands)
     {
-        if (currLevel == null)
+        if (currentLevel == null)
             return;
         StopAllCoroutines();
         SetTankTransform();
@@ -217,7 +270,10 @@ public class Level : MonoBehaviour
             (count == commands.Length ? Result.notSolve : Result.solve);
         if (count > commands.Length)
             count = commands.Length;
-        StartCoroutine(Player.GetCommands(commands[0..count], result));
+        if (firstResult == Result.wrongIf || firstResult == Result.wrongChest)
+            StartCoroutine(Player.GetCommands(commands[0..count], firstResult));
+        else
+            StartCoroutine(Player.GetCommands(commands[0..count], result));
     }
 
     private void ClearLevel()
@@ -226,22 +282,47 @@ public class Level : MonoBehaviour
             DestroyImmediate(transform.GetChild(0).gameObject);
     }
 
+    public void WallOnWay()
+    {
+        interpreter.ShowDescription("Стена находится на пути");
+    }
+
+    public void WrongIf()
+    {
+        interpreter.ShowDescription("Проверка на пустоту сундука не может проверять пустую клетку");
+    }
+
+    public void WrongChest()
+    {
+        interpreter.ShowDescription("Этот сундук пуст");
+    }
+
+    private void GameIsOver()
+    {
+        interpreter.ShowDescription("Игра пройдена!");
+    }
+
     public void SolveLevel()
     {
         Interpreter.level++;
         if (Interpreter.level == levels.Length)
-            interpreter.ShowDescription("Игра пройдена!");
+            Invoke(nameof(GameIsOver), 1);
         else
         {
+            if (Users.maxLevel < Interpreter.level)
+            {
+                Users.SetLevelData(Interpreter.level);
+                GameObject.Find("AR Session").GetComponent<Users>().ButtonActive();
+            }
             Invoke(nameof(NewLevel), 1);
         }
     }
 
-    private void NewLevel()
+    public void NewLevel()
     {
-        currLevel = levels[Interpreter.level];
-        if (currLevel.description != "")
-            interpreter.ShowDescription(currLevel.description);
+        currentLevel = levels[Interpreter.level];
+        if (currentLevel.description != "")
+            interpreter.ShowDescription(currentLevel.description);
         ClearLevel();
         CreateLevel();
     }
