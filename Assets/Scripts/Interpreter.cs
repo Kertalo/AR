@@ -36,16 +36,15 @@ public class Interpreter : MonoBehaviour
     [SerializeField] private GameObject buttons;
     [SerializeField] private GameObject description;
     [SerializeField] private TextMeshProUGUI descriptionText;
+    [SerializeField] private Spawn spawnManager;
     private GameObject surfaces;
-    private GameObject spawner;
     private bool isFirstDescription = true;
     public static int level = 0;
 
     private void Start()
     {
         surfaces = GameObject.Find("Trackables");
-        spawner = GameObject.Find("Object Spawner");
-        DisableSurfaces();
+        surfaces.SetActive(false);
     }
 
     public void DisableSurfaces()
@@ -55,18 +54,9 @@ public class Interpreter : MonoBehaviour
 
     public void DeleteLevel()
     {
-        GameObject level = GameObject.FindGameObjectWithTag("Player");
-        if (level != null)
-            Destroy(level);
         buttons.SetActive(false);
-        spawner.SetActive(false);
         surfaces.SetActive(true);
-        Invoke(nameof(DeleteIsOver), 0.3f);
-    }
-
-    private void DeleteIsOver()
-    {
-        spawner.SetActive(true);
+        spawnManager.DeleteLevel();
     }
 
     public void CloseDescription()

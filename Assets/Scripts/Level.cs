@@ -121,9 +121,6 @@ public class Level : MonoBehaviour
             "Ќужно использовать условие, вложенное в другое условие.\n" +
             "“о есть в последующих услови€х пробелов должно быть на один больше, чем у предыдущего.");
         interpreter = GameObject.Find("Canvas").GetComponent<Interpreter>();
-        if (interpreter == null)
-            return;
-        interpreter.DisableSurfaces();
         NewLevel();
     }
 
